@@ -15,7 +15,7 @@
         android:fontFamily="@font/orienta"
         android:text="@string/your_plants"
         android:textColor="@color/primary_dark_material_light_1"
-        android:textSize="32sp"
+        android:textSize="32dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

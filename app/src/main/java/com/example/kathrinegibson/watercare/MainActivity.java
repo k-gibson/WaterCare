@@ -1,5 +1,6 @@
 package com.example.kathrinegibson.watercare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,16 +17,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setTitle("WaterCare");
+        toolbar.setSubtitle("WaterCare");
+        toolbar.inflateMenu(R.menu.menu_main);
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        final Intent addPlantIntent = new Intent(this, AddActivity.class);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivity(addPlantIntent);
             }
         });
     }
@@ -45,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_help) {
+            return true;
+        }
+
+        if (id == R.id.action_about) {
             return true;
         }
 
