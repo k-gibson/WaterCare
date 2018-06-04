@@ -1,9 +1,10 @@
 package com.example.kathrinegibson.watercare;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,7 +14,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.google.gson.Gson;
+
 import static android.content.ContentValues.TAG;
+import static com.example.kathrinegibson.watercare.MainActivity.editor_string;
+import static com.example.kathrinegibson.watercare.MainActivity.userAddedPlants;
 
 
 public class AddActivity extends Activity implements OnItemSelectedListener {
@@ -29,6 +34,8 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent returnIntent = new Intent();
+                setResult(RESULT_CANCELED, returnIntent);
                 finish();
             }
         });
@@ -37,12 +44,15 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Plant newPlant = new Plant(newPlantType);
                 EditText userInput = findViewById(R.id.editText1);
                 plantName = userInput.getText().toString();
-                newPlant.changePlantName(plantName);
-                Log.v(TAG, "plant type: " + newPlantType);
-                Log.v(TAG, "plant name: " + plantName);
+                if(!plantName.equals("") && (newPlantType != PlantType.Default)){
+                    Plant newPlant = new Plant(newPlantType);
+                    newPlant.changePlantName(plantName);
+                    userAddedPlants.add(newPlant);
+                    saveData();
+                }
+                setResult(RESULT_OK);
                 finish();
             }
         });
@@ -51,13 +61,23 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
         spinner.setOnItemSelectedListener(this);
 
         // Creating adapter for spinner
-        ArrayAdapter<PlantType> dataAdapter = new ArrayAdapter<PlantType>(this, android.R.layout.simple_spinner_item, PlantType.values());
+        ArrayAdapter<PlantType> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, PlantType.values());
 
         // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
+    }
+
+    private void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(userAddedPlants);
+
+        editor.putString(editor_string, json);
+        editor.apply();
     }
 
     @Override

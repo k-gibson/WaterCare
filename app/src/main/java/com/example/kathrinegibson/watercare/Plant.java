@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Plant {
     private String name;
-    private String imagePath;
+    private int imagePath;
     private PlantType plantType;
 
-    public Plant(String name, String imagePath, PlantType plantType) {
+    public Plant(String name, int imagePath, PlantType plantType) {
         this.name = name;
         this.imagePath = imagePath;
         this.plantType = plantType;
@@ -16,7 +16,7 @@ public class Plant {
     public Plant(PlantType plantType) {
         for(Plant p : possiblePlants){
             if(p.plantType == plantType){
-                this.name = null;
+                this.name = "";
                 this.imagePath = p.imagePath;
                 this.plantType = plantType;
                 return;
@@ -24,25 +24,31 @@ public class Plant {
         }
 
         this.name = null;
-        this.imagePath = null;
+        this.imagePath = -1;
         this.plantType = PlantType.Default;
     }
 
-    static private ArrayList<Plant> possiblePlants = new ArrayList<Plant>();
+    static private ArrayList<Plant> possiblePlants = new ArrayList<>();
 
     //sets up all the possibilities for plants
     static {
-        possiblePlants.add(new Plant(null, "aloe.jpg", PlantType.AloeVera));
-        possiblePlants.add(new Plant(null, "rose.jpg", PlantType.Rose));
+        possiblePlants.add(new Plant(null, R.drawable.aloe, PlantType.AloeVera));
+        possiblePlants.add(new Plant(null, R.drawable.rose, PlantType.Rose));
     }
 
     public void changePlantName(String newName){
         this.name = newName;
     }
 
-/*
-    public static void main(String[] args) {
-        com.example.kathrinegibson.watercare.Plant myPlant = new com.example.kathrinegibson.watercare.Plant(com.example.kathrinegibson.watercare.PlantType.Rose);
-        System.out.println(myPlant.imagePath);
-    }*/
+    public String getName(){
+        return "\"" + name + "\"";
+    }
+
+    public int getImagePath(){
+        return imagePath;
+    }
+
+    public String getPlantType() {
+        return plantType.toString();
+    }
 }

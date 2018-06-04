@@ -4,7 +4,12 @@
     <string name="your_plants">Your Plants</string>
     <string name="add_new_plant">Add A New Plant</string>
     <string name="plant_type">Plant Type:</string>
-    <string name="plant_name">Name (Optional):</string>
+    <string name="plant_name">Name:</string>
     <string name="add_button">Add Plant</string>
     <string name="spinner_title">Choose</string>
+    <string name="water">Water Plant</string>
+    <string name="edit_plant">Edit Plant</string>
+    <string name="delete_plant">Delete Plant</string>
+    <string name="plant_info">Plant Info</string>
+    <string name="_8942">⋮</string>
 </resources>
