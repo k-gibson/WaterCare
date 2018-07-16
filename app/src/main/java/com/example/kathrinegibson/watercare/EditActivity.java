@@ -1,30 +1,40 @@
 package com.example.kathrinegibson.watercare;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.app.Activity;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import static com.example.kathrinegibson.watercare.MainActivity.rcAdapter;
 import static com.example.kathrinegibson.watercare.MainActivity.userAddedPlants;
 
-
-public class AddActivity extends Activity implements OnItemSelectedListener {
+public class EditActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     PlantType newPlantType = PlantType.Default;
-    String plantName = null;
+    String plantName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_edit);
+
+        final int position = getIntent().getIntExtra("my plant position", 0);
+
+        final Plant editPlant = userAddedPlants.get(position);
+
+        if (editPlant.getPlantType() != null){
+            newPlantType = editPlant.getPlantType();
+        }
+        else{
+            newPlantType = PlantType.Default;
+        }
+        plantName = editPlant.getName();
 
         FloatingActionButton fab2 = findViewById(R.id.fab2);
         fab2.setOnClickListener(new View.OnClickListener() {
@@ -33,32 +43,41 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
                 finish();
             }
         });
-        final Switch outdoorSwitch = findViewById(R.id.switch1);
 
-        Button addButton = findViewById(R.id.add_plant_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
+        final Switch outdoorSwitch = findViewById(R.id.switch2);
+        if(editPlant.getOutdoorPlant()){
+            outdoorSwitch.setChecked(true);
+        }
+
+        Button saveButton = findViewById(R.id.save_plant_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText userInput = findViewById(R.id.editText1);
                 plantName = userInput.getText().toString();
                 if(!plantName.equals("") && (newPlantType != PlantType.Default)){
-                    //if there is valid input, add the new plant to the list of plants
+                    //if there is valid input, edit the plant
                     Plant newPlant = new Plant(newPlantType);
                     newPlant.changePlantName(plantName);
                     if(outdoorSwitch.isChecked()){
                         newPlant.changeOutdoorPlant(true);
-                        System.out.println("when added: " + newPlant.getOutdoorPlant());
                     }
-                    userAddedPlants.add(newPlant);
-                    IOUtility.SaveData(AddActivity.this, userAddedPlants);
-                    rcAdapter.notifyItemInserted(userAddedPlants.size() - 1);
+
+                    if (editPlant != newPlant){
+                        userAddedPlants.set(position, newPlant);
+                        IOUtility.SaveData(EditActivity.this, userAddedPlants);
+                        rcAdapter.notifyItemChanged(position);
+                        finish();
+                    }
                 }
-                finish();
+                else {
+                    finish();
+                }
             }
         });
 
         //spinner is the drop down menu
-        Spinner spinner = findViewById(R.id.spinner1);
+        Spinner spinner = findViewById(R.id.spinner2);
         spinner.setOnItemSelectedListener(this);
 
         // Creating adapter for spinner
@@ -69,8 +88,6 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
 
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
-
-
     }
 
     @Override
@@ -82,4 +99,6 @@ public class AddActivity extends Activity implements OnItemSelectedListener {
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
 }

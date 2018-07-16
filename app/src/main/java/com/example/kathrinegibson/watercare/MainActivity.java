@@ -30,19 +30,19 @@ public class MainActivity extends AppCompatActivity {
     static ArrayList<Plant> userAddedPlants;
     static String editor_string = "plant list";
     private LinearLayoutManager lLayout;
-    private RecyclerViewAdapter rcAdapter;
+    static RecyclerViewAdapter rcAdapter;
     private RecyclerView rView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadData();
+        userAddedPlants = IOUtility.LoadData(this);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setSubtitle("WaterCare");
         toolbar.inflateMenu(R.menu.menu_main);
-
 
         lLayout = new GridLayoutManager(MainActivity.this,2);
 
@@ -58,21 +58,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                startActivity(addPlantIntent);
-
             }
         });
-    }
-
-    private void loadData(){
-        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString(editor_string, null);
-        Type type = new TypeToken<ArrayList<Plant>>() {}.getType();
-        userAddedPlants = gson.fromJson(json, type);
-
-        if (userAddedPlants == null){
-            userAddedPlants = new ArrayList<>();
-        }
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.kathrinegibson.watercare;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -8,16 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-
-import java.sql.SQLException;
-import java.util.List;
+import org.parceler.Parcels;
+import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolders> {
 
-    private List<Plant> itemList;
+    private ArrayList<Plant> itemList;
     private Context context;
 
-    public RecyclerViewAdapter(Context context, List<Plant> itemList) {
+    public RecyclerViewAdapter(Context context, ArrayList<Plant> itemList) {
         this.itemList = itemList;
         this.context = context;
     }
@@ -33,8 +34,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
     @Override
     public void onBindViewHolder(final RecyclerViewHolders holder, final int position) {
         holder.plantName.setText(itemList.get(position).getName());
-        holder.plantType.setText(itemList.get(position).getPlantType());
+        holder.plantType.setText(itemList.get(position).getPlantTypeString());
         holder.plantPhoto.setImageResource(itemList.get(position).getImagePath());
+        final Intent editPlantIntent = new Intent(context, EditActivity.class).putExtra("my plant position", position);
+        final Intent displayPlantIntent = new Intent(context, DisplayActivity.class).putExtra("my plant", Parcels.wrap(itemList.get(position)));
         holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,20 +50,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu1:
-                                Toast.makeText(context, "menu 1 clicked", Toast.LENGTH_SHORT).show();
+                                itemList.get(position).updateLastWatered();
+                                IOUtility.SaveData((Activity) context, itemList);
+                                notifyItemChanged(position);
                                 break;
                             case R.id.menu2:
-                                Toast.makeText(context, "menu 2 clicked", Toast.LENGTH_SHORT).show();
+                                context.startActivity(displayPlantIntent);
                                 break;
                             case R.id.menu3:
-                                Toast.makeText(context, "menu 3 clicked", Toast.LENGTH_SHORT).show();
+                                context.startActivity(editPlantIntent);
+                                notifyItemChanged(position);
                                 break;
                             case R.id.menu4:
-                                int itemLabel = holder.getAdapterPosition();
-                                itemList.remove(itemLabel);
-                                notifyItemRemoved(itemLabel);
-                                notifyItemRangeChanged(itemLabel,itemList.size());
-                                Toast.makeText(context,"Removed : " + itemLabel, Toast.LENGTH_SHORT).show();
+                                itemList.remove(position);
+                                IOUtility.SaveData((Activity) context, itemList);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position,itemList.size());
+                                Toast.makeText(context,"Removed : " + position, Toast.LENGTH_SHORT).show();
                                 break;
                         }
                         return false;
@@ -76,4 +82,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
     public int getItemCount() {
         return this.itemList.size();
     }
+
+
 }
